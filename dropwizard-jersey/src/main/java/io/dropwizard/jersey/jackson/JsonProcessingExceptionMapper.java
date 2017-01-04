@@ -65,10 +65,12 @@ public class JsonProcessingExceptionMapper extends LoggingExceptionMapper<JsonPr
             // Until completely foolproof mechanism can be worked out in coordination
             // with Jackson on how to communicate client vs server fault, compare
             // start of message with known server faults.
-            final boolean beanError = cause.getMessage().startsWith("No suitable constructor found") ||
-                cause.getMessage().startsWith("No serializer found for class") ||
-                (cause.getMessage().startsWith("Can not construct instance") &&
-                    !WRONG_TYPE_REGEX.matcher(cause.getMessage()).find());
+            String msg = cause.getMessage();
+            final boolean beanError = msg != null &&
+                (msg.startsWith("No suitable constructor found") ||
+                    msg.startsWith("No serializer found for class") ||
+                    (msg.startsWith("Can not construct instance") &&
+                        !WRONG_TYPE_REGEX.matcher(msg).find()));
 
             if (beanError && !clientCause) {
                 return super.toResponse(exception); // LoggingExceptionMapper will log exception
